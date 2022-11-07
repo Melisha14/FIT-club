@@ -1,0 +1,67 @@
+<?php
+
+include ('config.php');
+
+$mysqli=new mysqli("$db_host","$db_user","$db_pass","$db_base");
+
+if ($mysqli->connect_errno){
+    echo "Echec lors de la connexion à MySQL : (".
+    $mysqli->connect_errno.")".$mysqli->connect_error;
+}
+$mysqli->set_charset("utf8mb4");
+
+if(!empty($_POST['login']) && !empty($_POST['password'])){
+    $req="SELECT * FROM utilisateur WHERE email='".
+    $_POST['login']."' AND mot_de_passe=MD5('".
+    $_POST['password'].$SEL_MDP."')";
+
+ 
+    $res=$mysqli->query($req);
+    if($res->num_rows>0){
+    
+    $row=$res->fetch_assoc();
+
+    session_start();
+
+    $_SESSION['user_nom']=$row['nom'];
+    $_SESSION['user_prenom']=$row['prenom'];
+    $_SESSION['user_id']=$row['id'];
+    
+    header('Location: .');
+}
+    else{
+    $message_erreur='Authentification incorrecte';
+    
+    }
+}
+
+if(!empty($message_erreur)){
+    echo $message_erreur;
+} 
+?>
+
+<section class="connexion">
+
+
+    <div class="img-login">
+        <img src="images/connexion.jpg" width="442", height="537"/>
+    </div>
+
+    <form method="POST">
+        <h1 class="login"> Page de connexion </h2>
+            <label>Adresse mail</label>
+            <input type="text" placeholder="Email" name="login" />
+            <label>Mot de passe</label>
+            <input type="password" placeholder=" Password" name="password" />
+            <input type="submit" value="Login" class="btn" />
+    </form>
+  
+    <a href="mdp_oublie.php">Forgot Password?</a>
+
+</section>
+
+
+
+<?php
+include ('footer.php');
+?>
